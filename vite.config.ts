@@ -1,14 +1,20 @@
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
+import { GITHUB_REPO_URL } from "./src/config";
 import {
   buildRobotsTxt,
   buildSeoHead,
   buildSitemapXml,
-  resolveSiteUrl,
+  normalizeSiteUrl,
+  siteUrlFromRepo,
 } from "./src/seo";
 
-function seoPlugin(): Plugin {
-  const siteUrl = resolveSiteUrl();
+function resolveSiteUrl(env: Record<string, string>): string {
+  const fromEnv = env.VITE_SITE_URL?.trim();
+  if (fromEnv) return normalizeSiteUrl(fromEnv);
+  return siteUrlFromRepo(GITHUB_REPO_URL);
+}
 
+function seoPlugin(siteUrl: string): Plugin {
   return {
     name: "seo",
     transformIndexHtml(html) {
@@ -31,7 +37,12 @@ function seoPlugin(): Plugin {
   };
 }
 
-export default defineConfig({
-  base: "./",
-  plugins: [seoPlugin()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const siteUrl = resolveSiteUrl(env);
+
+  return {
+    base: "./",
+    plugins: [seoPlugin(siteUrl)],
+  };
 });

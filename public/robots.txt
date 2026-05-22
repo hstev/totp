@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://hstev.github.io/totp/sitemap.xml
