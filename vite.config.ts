@@ -1,18 +1,10 @@
 import { defineConfig, type Plugin } from "vite";
-import { GITHUB_REPO_URL } from "./src/config";
 import {
   buildRobotsTxt,
   buildSeoHead,
   buildSitemapXml,
-  normalizeSiteUrl,
-  siteUrlFromRepo,
+  resolveSiteUrl,
 } from "./src/seo";
-
-function resolveSiteUrl(): string {
-  const fromEnv = process.env.VITE_SITE_URL?.trim();
-  if (fromEnv) return normalizeSiteUrl(fromEnv);
-  return siteUrlFromRepo(GITHUB_REPO_URL);
-}
 
 function seoPlugin(): Plugin {
   const siteUrl = resolveSiteUrl();
@@ -40,6 +32,6 @@ function seoPlugin(): Plugin {
 }
 
 export default defineConfig({
-  base: "/totp",
+  base: "./",
   plugins: [seoPlugin()],
 });
